@@ -5,7 +5,7 @@
 const laravelApiBaseUrl = process.env.LARAVEL_API_BASE_URL;
 
 if (!laravelApiBaseUrl) {
-  throw new Error("LARAVEL_API_BASE_URL is not defined");
+  throw new Error("API_BASE_URL is not defined");
 }
 
 export const env = {

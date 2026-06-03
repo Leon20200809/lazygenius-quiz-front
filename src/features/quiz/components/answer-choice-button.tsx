@@ -1,12 +1,20 @@
 "use client";
 
+import { submitSampleAnswer } from "../api/submit-sample-answer";
+
 type AnswerChoiceButtonProps = {
+  questionId: number;
   choice: string;
 };
 
-export function AnswerChoiceButton({ choice }: AnswerChoiceButtonProps) {
-  function handleClick() {
-    console.log("選択した答え:", choice);
+export function AnswerChoiceButton({questionId, choice,}: AnswerChoiceButtonProps) {
+  async function handleClick() {
+    const result = await submitSampleAnswer({
+      question_id: questionId,
+      selected_answer: choice,
+    });
+
+    console.log("判定結果:", result);
   }
 
   return (

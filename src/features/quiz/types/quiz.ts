@@ -8,3 +8,13 @@ export type QuizQuestion = {
 export type SampleQuizResponse = {
   question: QuizQuestion;
 };
+
+export type SampleAnswerRequest = {
+  question_id: number;
+  selected_answer: string;
+};
+
+export type SampleAnswerResponse = {
+  is_correct: boolean;
+  correct_answer: string;
+};
