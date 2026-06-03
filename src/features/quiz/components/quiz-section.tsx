@@ -1,4 +1,5 @@
 import type { QuizQuestion } from "../types/quiz";
+import { AnswerChoiceButton } from "./answer-choice-button";
 
 type QuizSectionProps = {
   question: QuizQuestion;
@@ -18,12 +19,7 @@ export function QuizSection({ question }: QuizSectionProps) {
       <ul className="grid gap-4">
         {question.choices.map((choice) => (
           <li key={choice}>
-            <button
-              type="button"
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-left font-bold hover:bg-gray-100"
-            >
-              {choice}
-            </button>
+            <AnswerChoiceButton choice={choice} />
           </li>
         ))}
       </ul>
