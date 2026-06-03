@@ -1,11 +1,12 @@
+import { SiteShell } from "@/components/layout/site-shell";
 import { fetchSampleQuiz } from "@/features/quiz/api/fetch-sample-quiz";
 
 export default async function Home() {
   const sampleQuiz = await fetchSampleQuiz();
 
   return (
-    <main className="min-h-screen px-6 py-10">
-      <section className="mx-auto max-w-3xl">
+    <SiteShell>
+      <section className="mx-auto max-w-3xl rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <p className="mb-3 text-sm font-bold text-gray-500">
           {sampleQuiz.question.category}
         </p>
@@ -27,6 +28,6 @@ export default async function Home() {
           ))}
         </ul>
       </section>
-    </main>
+    </SiteShell>
   );
 }
