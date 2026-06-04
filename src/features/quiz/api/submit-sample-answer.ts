@@ -1,6 +1,5 @@
 // Laravel APIへ選択した答えをPOSTする
 
-import { publicEnv } from "@/lib/public-env";
 import type {
   SampleAnswerRequest,
   SampleAnswerResponse,
@@ -12,8 +11,7 @@ import type {
 export async function submitSampleAnswer(
   answer: SampleAnswerRequest,
 ): Promise<SampleAnswerResponse> {
-  const response = await fetch(
-    `${publicEnv.laravelApiBaseUrl}/api/quizzes/sample/answer`,
+  const response = await fetch("/api/quizzes/sample/answer",
     {
       method: "POST",
       headers: {
