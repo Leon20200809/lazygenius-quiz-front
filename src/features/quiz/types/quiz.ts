@@ -5,6 +5,10 @@ export type QuizQuestion = {
   choices: string[];
 };
 
+export type QuizStartResponse = {
+  questions: QuizQuestion[];
+};
+
 export type StartQuizResponse = {
   questions: QuizQuestion[];
 };
@@ -22,4 +26,5 @@ export type SampleAnswerResponse = {
   is_correct: boolean;
   correct_answer: string;
 };
+
 

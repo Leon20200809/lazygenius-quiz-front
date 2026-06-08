@@ -1,16 +1,22 @@
-// app/page.tsx トップページ
+// app/page.tsx
+// トップページ
 
 import { SiteShell } from "@/components/layout/site-shell";
 import { QuizHome } from "@/features/quiz/client/quiz-home";
-import { fetchSampleQuiz } from "@/features/quiz/api/fetch-sample-quiz";
-import { QuizSection } from "@/features/quiz/components/quiz-section";
 
-export default async function Home() {
-  const sampleQuiz = await fetchSampleQuiz();
-
+/**
+ * トップページ
+ *
+ * このページでは、サイト全体の外枠であるSiteShellの中に
+ * クイズ開始画面であるQuizHomeを表示する。
+ *
+ * 10問取得やクイズ進行はQuizHomeの先にあるQuizPlayerが担当するため、
+ * page.tsxではAPI通信を行わない。
+ */
+export default function Home() {
   return (
     <SiteShell>
-      <QuizHome question={sampleQuiz.question} />
+      <QuizHome />
     </SiteShell>
   );
 }

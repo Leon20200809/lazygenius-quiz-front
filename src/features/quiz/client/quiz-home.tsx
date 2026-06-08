@@ -1,16 +1,12 @@
+// quiz-home.tsx introかquizかを切り替える
 "use client";
 
 import { useState } from "react";
-import { QuizSection } from "@/features/quiz/components/quiz-section";
-import type { QuizQuestion } from "@/features/quiz/types/quiz";
-
-type QuizHomeProps = {
-  question: QuizQuestion;
-};
+import { QuizPlayer } from "@/features/quiz/client/quiz-player";
 
 type ScreenMode = "intro" | "quiz";
 
-export function QuizHome({ question }: QuizHomeProps) {
+export function QuizHome() {
   const [screen_mode, set_screen_mode] = useState<ScreenMode>("intro");
 
   const handleStartQuiz = () => {
@@ -75,11 +71,7 @@ export function QuizHome({ question }: QuizHomeProps) {
     </section>
   );
 
-  const quiz_content = (
-    <section className="mx-auto max-w-4xl px-6 py-16">
-      <QuizSection question={question} />
-    </section>
-  );
+  const quiz_content = <QuizPlayer />;
 
   return screen_mode === "intro" ? intro_content : quiz_content;
 }
