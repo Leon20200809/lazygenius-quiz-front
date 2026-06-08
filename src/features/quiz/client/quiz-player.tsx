@@ -73,20 +73,24 @@ export function QuizPlayer() {
   }
 
   /**
-   * 次の問題へ進む
+   * ユーザーが選んだ回答を保存して、次の問題へ進む
    */
   function handleSelectAnswer(selected_answer: string) {
-    // ユーザーの選択した解答をためる現在の問題IDと選択した回答を配列へ追加する
-    setAnswers((previous_answers) => [
-      ...previous_answers,
-      {
-        question_id: current_question.id,
-        selected_answer,
-      },
-    ]);
+    // ユーザーの回答を、現在の問題IDとセットで保存する
+    setAnswers((previous_answers) => {
+      const next_answers = [
+        ...previous_answers,
+        {
+          question_id: current_question.id,
+          selected_answer,
+        },
+      ];
 
-    console.table(selected_answer);
+      // 追加後の回答配列を確認する
+      console.table(next_answers);
 
+      return next_answers;
+    });
 
     // 最後の問題なら、それ以上進ませない
     if (is_last_question) {
