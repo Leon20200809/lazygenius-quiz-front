@@ -1,110 +1,107 @@
 # Web開発用語クイズアプリ
 
-Laravel API × Next.js で構築する、Web開発用語の4択クイズアプリです。
+Laravel API × Next.js で構築した、Web開発用語の4択クイズアプリです。
 
-このアプリは、単なるクイズ画面ではなく、実務の大規模Webアプリで使われる構成を個人開発サイズに圧縮して再現することを目的としています。
+単なるクイズ画面ではなく、フロントエンドとバックエンドを分離し、API通信、状態管理、BFF、DB設計、サーバー側採点、本番デプロイまでを個人開発サイズで再現しています。
 
-フロントエンドは Next.js、バックエンドは Laravel API として分離し、API通信、DB設計、CSV取り込み、サーバー側での正解判定、責務分離を実装しています。
+## 公開URL
 
----
+- アプリ: https://lazygenius-quiz-front.vercel.app/
+- バックエンドAPI: https://api.lazygenius.dev/
+- バックエンドリポジトリ: https://github.com/Leon20200809/lazygenius-quiz-api
 
 ## 概要
 
-Web開発で使われる用語を4択形式で確認できる学習用クイズアプリです。
+ユーザーがSTARTボタンを押すと、Laravel APIからランダムに10問を取得します。
 
-ユーザーはクイズ開始ボタンを押すと、Laravel API から取得した問題に順番に回答します。
+問題は1問ずつ表示され、選択した回答をReactのstateへ蓄積します。10問目の回答後に、10問分をまとめてNext.jsのRoute Handlerへ送信し、Laravel側で一括採点します。
 
-問題データはCSVからLaravel側のSeederでMySQLへ取り込み、Laravel APIがランダムに10問を取得します。
+採点後はリザルト画面へ切り替わり、以下を確認できます。
 
-選択肢は、正解1つに加えて、同カテゴリの別の正解用語から誤答候補を自動生成します。
-
----
+- 合計得点
+- 問題文
+- ユーザーが選択した回答
+- 正解
+- 正誤結果
 
 ## 作った理由
 
-実務で使われるフロントエンドとバックエンドを分離した構成を小さく再現し、API通信、DB設計、CSV取り込み、サーバー側判定を経験するために作成しました。
+実務で使われるフロントエンドとバックエンドを分離した構成を、小さなクイズアプリとして再現するために作成しました。
 
-開発現場で必要な責務分離とデータ連携の理解を深めることを目的としています。
+このアプリを通じて、以下を実践しています。
 
-また、クイズというシンプルな題材を使いながら、将来的にマッチングアプリや学習サービスなどに発展できる構成を意識しています。
+- Next.jsとLaravelの責務分離
+- Client Componentでの状態管理
+- Next.js Route HandlerによるBFF構成
+- Laravel APIとのGET / POST通信
+- 回答配列の蓄積
+- 画面状態の切り替え
+- 二重送信防止
+- サーバー側での正解判定
+- VercelとXserverを使った本番公開
 
----
+技術を並べることではなく、「どの処理をどこへ置くか」を意識した設計を重視しています。
 
 ## 使用技術
 
-### Frontend
+| 分類 | 技術 |
+|---|---|
+| フロントエンド | Next.js / React |
+| 言語 | TypeScript |
+| CSS | Tailwind CSS |
+| ルーティング | App Router |
+| BFF | Next.js Route Handler |
+| バックエンド | Laravel API |
+| データベース | MySQL |
+| フロント本番環境 | Vercel |
+| バックエンド本番環境 | Xserver |
+| バージョン管理 | Git / GitHub |
 
-* Next.js
-* React
-* TypeScript
-* Tailwind CSS
-* App Router
+## 主な機能
 
-### Backend
+- STARTボタンによるクイズ開始
+- Laravel APIからランダム10問取得
+- 4択問題の1問ずつ表示
+- 現在の問題番号表示
+- 回答のstate保存
+- 10問分の回答一括送信
+- Next.js Route Handler経由のAPI通信
+- Laravel側での一括採点
+- 合計得点表示
+- 問題ごとの正誤一覧
+- イントロ / クイズ / リザルト画面の状態切り替え
+- トップ画面へ戻る処理
+- 回答送信時の二重送信防止
 
-* Laravel
-* MySQL
-* Eloquent
-* Seeder
-* API Routes
+## アプリ全体の流れ
 
-### Data
-
-* CSV
-* Laravel Seeder
-* MySQL
-
----
-
-## 現在実装済みの機能
-
-### Backend
-
-* Laravel APIプロジェクト作成
-* `/api/health` によるヘルスチェックAPI
-* `/api/quizzes/sample` による仮クイズAPI
-* `/api/quizzes/sample/answer` による仮回答判定API
-* `QuizController` の作成
-* `QuizService` の作成
-* `selected_answer` を使ったサンプル正解判定
-* MySQL接続設定
-* `questions` テーブル作成
-* CSVから `questions` テーブルへ322件の問題データを投入
-* `/api/quizzes/start` によるクイズ開始API
-* DBからランダムに10問取得
-* 各問題に対して4択の選択肢を自動生成
-* 正解情報をフロントへ返さないレスポンス設計
-
-### Frontend
-
-* Next.jsプロジェクト作成
-* Laravel APIから仮クイズを取得
-* サンプル問題表示
-* 回答ボタンからPOST通信
-* トップページ紹介セクション作成
-* STARTボタンによる画面切替の土台作成
-* Client Component / Server Component の責務分離
-* Next.js Route Handler を使ったBFF的な中継API設計
-
----
-
-## 設計思想
-
-このアプリでは、単にクイズ画面を実装するだけでなく、実務の大規模Webアプリで使われる構成を小さく再現することを重視しています。
-
-フロントエンドは Next.js、バックエンドは Laravel API として分離し、それぞれの責務を明確にしています。
-
-Next.js は画面表示・ユーザー操作・状態管理を担当し、Laravel は問題データの管理、選択肢生成、正解判定、DBアクセスを担当します。
-
-また、ブラウザ側のJavaScriptはユーザーから見える前提で設計しています。そのため、Client Component から Laravel API を直接呼び出さず、Next.js の Route Handler を経由して通信します。
-
-これにより、Laravel API の実URLや内部構成をフロントに持たせず、ブラウザ側には画面操作に必要な最低限の情報だけを渡す構成にしています。
-
-クイズの正解データもフロントには渡さず、正解判定はLaravel側で行います。これにより、DevToolsなどから正解が見えてしまう状態を避け、サーバー側で判定責務を持つ設計にしています。
-
-MVP段階でも、通信経路、責務分離、情報公開範囲を意識し、プロの開発現場で通用する構成を目指しています。
-
----
+```txt
+INTRO
+↓
+START
+↓
+Next.js Route Handler
+↓
+Laravel APIから10問取得
+↓
+QuizPlayerで1問ずつ表示
+↓
+ユーザー回答をstateへ蓄積
+↓
+10問目で回答配列を一括送信
+↓
+Next.js Route Handler
+↓
+Laravel APIで採点
+↓
+SubmitQuizResponseを受信
+↓
+RESULT画面へ切り替え
+↓
+得点・正誤一覧を表示
+↓
+トップへ戻る
+```
 
 ## 通信設計
 
@@ -113,291 +110,440 @@ MVP段階でも、通信経路、責務分離、情報公開範囲を意識し�
 ```txt
 Browser
 ↓
+GET /api/quizzes/start
+↓
 Next.js Route Handler
+↓
+GET https://api.lazygenius.dev/api/quizzes/start
 ↓
 Laravel API
 ↓
 MySQL
 ```
 
-Client Component からは Laravel API を直接呼び出さず、Next.js の `/api/...` を経由します。
+ブラウザからLaravel APIを直接呼ばず、Next.jsのRoute Handlerを経由します。
+
+### 回答送信
 
 ```txt
-GET /api/quizzes/start
-```
-
-Next.js Route Handler が Laravel API に中継します。
-
-```txt
-GET Laravel /api/quizzes/start
-```
-
-Laravel API はMySQLから出題対象の問題を10問ランダムに取得し、各問題に4択の選択肢を付けて返します。
-
----
-
-## API設計
-
-### Laravel API
-
-#### ヘルスチェック
-
-```txt
-GET /api/health
-```
-
-Laravel APIが起動しているか確認するAPIです。
-
-#### サンプルクイズ取得
-
-```txt
-GET /api/quizzes/sample
-```
-
-仮の1問を返すAPIです。
-
-#### サンプル回答判定
-
-```txt
-POST /api/quizzes/sample/answer
-```
-
-仮の1問に対して、選択された回答を判定します。
-
-#### クイズ開始
-
-```txt
-GET /api/quizzes/start
-```
-
-DBからランダムに10問取得し、各問題に4択の選択肢を付けて返します。
-
-正解情報はレスポンスに含めません。
-
----
-
-## DB設計
-
-### questions テーブル
-
-Web開発用語クイズの問題データを管理します。
-
-| カラム            | 内容       |
-| -------------- | -------- |
-| id             | 主キー      |
-| correct_answer | 正解となる用語  |
-| question_text  | 問題文      |
-| category       | カテゴリ     |
-| is_active      | 出題対象かどうか |
-| created_at     | 作成日時     |
-| updated_at     | 更新日時     |
-
-### 重複判定
-
-同じ正解用語でも、問題文が違えば別問題として扱います。
-
-```txt
-correct_answer + question_text
-```
-
-この組み合わせで重複を判定します。
-
-これにより、1つの用語に対して複数の問題文を持てるようにしています。
-
----
-
-## CSV取り込み
-
-初期データはCSVで管理し、Laravel SeederでMySQLへ取り込みます。
-
-CSVの列構成は以下です。
-
-```txt
-correct_answer
-question_text
-category
-isActive
-```
-
-Seederでは、`correct_answer` と `question_text` の組み合わせをキーにして `updateOrCreate` を行います。
-
-これにより、CSVを再投入しても同じ問題が重複登録されないようにしています。
-
----
-
-## 選択肢生成ロジック
-
-現在のCSVには誤答選択肢がありません。
-
-そのため、Laravel側で以下のルールに基づいて選択肢を生成します。
-
-1. 出題する問題の `correct_answer` を正解選択肢にする
-2. 同じ `category` の別問題から `correct_answer` を3つ取得する
-3. 正解1つ + 誤答3つを混ぜる
-4. 最後にシャッフルする
-5. フロントには正解がどれか分からない状態で返す
-
-同カテゴリだけで誤答候補が足りない場合は、全カテゴリから不足分を補充します。
-
----
-
-## パフォーマンス方針
-
-MVP段階でも、ループ内でDBアクセスを繰り返さない設計を意識しています。
-
-選択肢生成では、各問題ごとにDBへ問い合わせるのではなく、必要な候補を先にまとめて取得し、Laravel側のCollection上で加工します。
-
-```txt
-悪い例:
-10問取得
+Browser
 ↓
-各問題ごとに誤答候補をDB取得
-
-採用した方針:
-10問取得
+POST /api/quizzes/submit
 ↓
-必要なカテゴリを集める
+Next.js Route Handler
 ↓
-誤答候補をまとめて取得
+POST https://api.lazygenius.dev/api/quizzes/submit
 ↓
-Laravel側で選択肢を生成
+Laravel API
+↓
+採点結果
+↓
+Next.js
+↓
+Browser
 ```
 
-MVPでは可読性を優先して `shuffle()->take()` を使用しています。
+## Route Handlerを使う理由
 
-将来的に問題数が大きく増えた場合は、候補抽出処理の最適化やキャッシュ化を検討します。
+Client ComponentからLaravel APIを直接呼ぶのではなく、Next.js Route HandlerをBFFとして使用しています。
 
----
+理由は以下です。
 
-## フロントエンド構成
-
-### Server Component
-
-* 初期表示
-* サーバー側でのデータ取得
-* レイアウト構成
-
-### Client Component
-
-* STARTボタンによる画面切替
-* クイズ画面の進行管理
-* 現在の問題番号の管理
-* 回答の一時保存
-* 選択肢クリック処理
-
----
-
-## フォルダ構成方針
+- ブラウザから見える通信先をNext.js側へ統一する
+- Laravel APIの実URLをClient Componentへ直接持たせない
+- サーバー専用環境変数を利用する
+- CORSの影響を受けにくい構成にする
+- LaravelからのレスポンスをNext.js側で中継する
+- 将来的に認証、ログ、レスポンス整形を追加しやすくする
 
 ```txt
-features/quiz/
-├─ api/
-│  ├─ fetch-sample-quiz.ts
-│  ├─ fetch-start-quiz.ts
-│  └─ submit-sample-answer.ts
-│
-├─ client/
-│  ├─ quiz-home.tsx
-│  └─ quiz-player.tsx
+Client Component
+↓
+Next.js Route Handler
+↓
+Laravel API
+```
+
+すべての通信をRoute Handlerへ寄せるのではなく、ブラウザと外部APIの境界に置く意味がある場合に使用する方針です。
+
+## 状態管理
+
+### QuizHome
+
+アプリ全体の画面状態を管理します。
+
+```ts
+type ScreenMode = "intro" | "quiz" | "result";
+```
+
+主なstate:
+
+- `screen_mode`
+- `quiz_result`
+
+役割:
+
+- イントロ画面の表示
+- クイズ画面への切り替え
+- 採点結果の保存
+- リザルト画面への切り替え
+- トップ画面へのリセット
+
+### QuizPlayer
+
+クイズ進行に必要な状態を管理します。
+
+主なstate:
+
+- `questions`
+- `current_index`
+- `answers`
+- `is_loading`
+- `error_message`
+- `is_submitting`
+
+役割:
+
+- 10問取得
+- 現在の問題を選ぶ
+- 回答を蓄積する
+- 次の問題へ進む
+- 10問目で一括送信する
+- 二重送信を防止する
+
+### 状態の箱
+
+```txt
+questions
+→ APIから取得した10問
+
+current_index
+→ 現在表示している問題位置
+
+current_question
+→ 現在表示する1問
+
+answers
+→ ユーザーの回答履歴
+
+quiz_result
+→ Laravelから返された採点結果
+
+screen_mode
+→ intro / quiz / result
+```
+
+## 子から親への結果通知
+
+`QuizPlayer` は採点結果を自分で画面切り替えせず、親の`QuizHome`へ通知します。
+
+```tsx
+<QuizPlayer onComplete={handleQuizComplete} />
+```
+
+`QuizPlayer`内:
+
+```tsx
+onComplete(result);
+```
+
+実際には、親から渡された`handleQuizComplete`が実行されます。
+
+```txt
+QuizPlayer
+↓
+onComplete(result)
+↓
+QuizHome
+↓
+quiz_resultへ保存
+↓
+screen_modeをresultへ変更
+```
+
+## 回答配列の設計
+
+1問分の回答:
+
+```ts
+export type QuizAnswer = {
+  question_id: number;
+  selected_answer: string;
+};
+```
+
+10問分の送信:
+
+```ts
+export type SubmitQuizRequest = {
+  answers: QuizAnswer[];
+};
+```
+
+採点結果:
+
+```ts
+export type SubmitQuizResponse = {
+  score: number;
+  total: number;
+  results: QuizResult[];
+};
+```
+
+## 10問目の送信処理
+
+Reactのstate更新は即時反映ではないため、10問目を送る際は古い`answers`ではなく、今回の回答を追加した`next_answers`を使用します。
+
+```txt
+previous answers
+→ 9件
+
+今回の回答
+→ 10問目
+
+next_answers
+→ 完成した10件
+```
+
+```tsx
+const next_answers = [
+  ...answers,
+  {
+    question_id: current_question.id,
+    selected_answer,
+  },
+];
+
+setAnswers(next_answers);
+
+await submitQuiz({
+  answers: next_answers,
+});
+```
+
+## 二重送信防止
+
+10問目の回答ボタンを連続で押すと、同じ回答が追加され、11件送信になる可能性があります。
+
+そのため、送信中は再実行を防止します。
+
+```txt
+未送信
+↓
+送信開始
+↓
+ロック
+↓
+API通信
+↓
+成功または失敗
+↓
+必要に応じて解除
+```
+
+UI表示用のstateと、即時ロック用のrefを使い分けます。
+
+- `is_submitting`: 送信中表示やdisabled制御
+- `is_submitting_ref`: 同じ瞬間の再実行防止
+
+## 画面コンポーネント
+
+| コンポーネント | 役割 |
+|---|---|
+| `QuizHome` | 画面状態の管理 |
+| `QuizIntroSection` | イントロ画面 |
+| `QuizPlayer` | クイズ進行 |
+| `QuizSection` | 現在の問題表示 |
+| `AnswerChoiceButton` | 回答選択 |
+| `QuizResultSection` | 得点・正誤一覧表示 |
+
+`QuizHome`は状態と画面切り替えに集中し、各画面の表示は専用コンポーネントへ分離しています。
+
+## フォルダ構成
+
+```txt
+src/
+├─ app/
+│  ├─ api/
+│  │  └─ quizzes/
+│  │     ├─ start/
+│  │     │  └─ route.ts
+│  │     └─ submit/
+│  │        └─ route.ts
+│  ├─ globals.css
+│  ├─ layout.tsx
+│  └─ page.tsx
 │
 ├─ components/
-│  ├─ quiz-section.tsx
-│  └─ answer-choice-button.tsx
+│  └─ layout/
+│     ├─ site-footer.tsx
+│     ├─ site-header.tsx
+│     └─ site-shell.tsx
 │
-└─ types/
-   └─ quiz.ts
+├─ features/
+│  └─ quiz/
+│     ├─ api/
+│     │  ├─ fetch-start-quiz.ts
+│     │  └─ submit-quiz.ts
+│     ├─ client/
+│     │  ├─ quiz-home.tsx
+│     │  └─ quiz-player.tsx
+│     ├─ components/
+│     │  ├─ answer-choice-button.tsx
+│     │  ├─ quiz-intro-section.tsx
+│     │  ├─ quiz-result-section.tsx
+│     │  └─ quiz-section.tsx
+│     └─ types/
+│        ├─ quiz-question.ts
+│        ├─ start-quiz.ts
+│        └─ submit-quiz.ts
+│
+└─ lib/
+   └─ env.ts
 ```
 
-### client フォルダ
+## 環境変数
 
-ユーザー操作、state、クリック処理、画面切替を持つClient Componentを配置します。
+`.env.local`:
 
-### components フォルダ
+```env
+LARAVEL_API_BASE_URL=http://lazygenius-quiz-api.test
+```
 
-表示用の小さなUI部品を配置します。
+Vercel:
 
----
+```env
+LARAVEL_API_BASE_URL=https://api.lazygenius.dev
+```
 
-## 今後実装予定
+この環境変数はRoute Handlerからのみ使用します。
 
-### クイズ進行機能
+`NEXT_PUBLIC_`は付けません。
 
-* `/api/quizzes/start` から10問取得
-* STARTボタン押下でクイズ開始
-* 1問ずつ表示
-* 選択肢クリックで次の問題へ進む
-* 回答内容をstateに保持
-* 10問終了後に回答をまとめて送信
+## ローカル環境構築
 
-### 採点機能
+### 1. リポジトリをクローン
 
-* Next.js Route Handler経由で回答を送信
-* Laravel APIで10問分を一括採点
-* スコアを返却
-* 結果画面を表示
-* 各問題の正誤を表示
+```bash
+git clone https://github.com/Leon20200809/lazygenius-quiz-front.git
+cd lazygenius-quiz-front
+```
 
-### UI改善
+### 2. 依存関係をインストール
 
-* 進捗表示
-* 回答済み数の表示
-* 結果画面のデザイン
-* ローディング表示
-* エラー表示
+```bash
+npm install
+```
 
-### ドキュメント整備
+### 3. 環境変数を設定
 
-* README更新
-* API設計書
-* DB設計書
-* 開発ログ
-* 技術選定理由
-* 設計思想の整理
+```bash
+cp .env.example .env.local
+```
 
-### 将来的な拡張
+```env
+LARAVEL_API_BASE_URL=http://lazygenius-quiz-api.test
+```
 
-* ユーザー認証
-* 回答履歴保存
-* 苦手カテゴリ分析
-* 復習モード
-* ランキング
-* 管理画面
-* CSV再取り込み機能
-* 問題編集機能
-* カテゴリ別出題
-* 難易度別出題
+### 4. 開発サーバーを起動
 
----
+```bash
+npm run dev
+```
 
-## 学習・実装で意識したこと
+確認URL:
 
-* フロントエンドとバックエンドの責務分離
-* ブラウザに不要な情報を渡さない設計
-* サーバー側での正解判定
-* CSVからDBへの初期データ投入
-* LaravelのControllerとServiceの分離
-* Next.js Route Handlerを使ったBFF的な中継
-* TypeScriptによるAPIレスポンス型定義
-* ループ内DBアクセスを避ける設計
-* MVP段階での作りすぎ防止
+```txt
+http://localhost:3000
+```
 
----
+## デプロイ
 
-## 開発方針
+GitHubとVercelを連携し、`main`ブランチへのpushをトリガーに自動ビルド・自動デプロイします。
 
-一気に完成形を作るのではなく、小さく動く状態を積み上げながら実装しています。
+```txt
+mainへpush
+↓
+Vercelが変更を検知
+↓
+依存関係をインストール
+↓
+Next.jsをビルド
+↓
+本番公開
+```
 
-1. Laravel APIの疎通確認
-2. Next.jsからAPI取得
-3. サンプルクイズ表示
-4. 回答POST確認
-5. MySQL接続
-6. CSV取り込み
-7. DBから10問取得
-8. 選択肢生成
-9. フロントで1問ずつ表示
-10. 採点API実装
+Vercelには次の環境変数を設定します。
 
-MVPでは、まずクイズとして一通り遊べる状態を目指します。
+```env
+LARAVEL_API_BASE_URL=https://api.lazygenius.dev
+```
 
-その後、認証、履歴、管理画面などを追加し、大規模Webアプリに近い構成へ拡張していく予定です。
+## 本番確認項目
+
+```txt
+1. トップページが表示される
+2. STARTでクイズ画面へ切り替わる
+3. 10問取得できる
+4. 回答が1問ずつ進む
+5. 10問目でPOSTが1回だけ送信される
+6. 得点が表示される
+7. 正誤一覧が表示される
+8. トップへ戻れる
+```
+
+## 開発中に発生した問題
+
+### React Strict ModeでGETが2回実行される
+
+開発環境では、React Strict Modeにより`useEffect`内の取得処理が2回動いて見える場合があります。
+
+本番環境で同じ挙動になるとは限らないため、NetworkタブとInitiatorを確認して切り分けました。
+
+### 10問目の二重送信
+
+10問目のボタンを連続操作すると、1回目は10件、2回目は11件として送信され、Laravel側のバリデーションで422になりました。
+
+ログで以下を確認して原因を特定しました。
+
+```txt
+answers_length: 10
+next_answers_length: 11
+```
+
+送信中ロックを追加して防止しています。
+
+### 本番でPOSTが404
+
+Vercel側のRoute Handlerではなく、Laravel API側の最新コードが本番へ反映されていないことが原因でした。
+
+以下の順で切り分けました。
+
+```txt
+Request URL
+Status
+Payload
+Response
+本番APIのroute
+最新コミット
+デプロイ履歴
+```
+
+## 今後の改善
+
+- PHPUnitによるLaravel APIテスト
+- Postmanによる手動API確認
+- フロントエンドのテスト追加
+- ローディングUI改善
+- エラー表示改善
+- 再挑戦ボタン
+- カテゴリ選択
+- スコア履歴
+- ランキング
+- 管理画面
+- 問題追加UI
+- レスポンスキャッシュの検討
+
+## 関連リポジトリ
+
+- Backend: https://github.com/Leon20200809/lazygenius-quiz-api
