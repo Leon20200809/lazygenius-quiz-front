@@ -1,4 +1,4 @@
-import type { StartQuizResponse } from "@/features/quiz/types/quiz";
+import type { StartQuizResponse } from "@/features/quiz/types/start-quiz";
 
 /**
  * クイズ開始用の問題データを取得する(10問)
