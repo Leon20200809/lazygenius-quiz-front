@@ -6,17 +6,24 @@ import { useEffect, useState } from "react";
 import { fetchStartQuiz } from "@/features/quiz/api/fetch-start-quiz";
 import { QuizSection } from "@/features/quiz/components/quiz-section";
 import { submitQuiz } from "@/features/quiz/api/submit-quiz";
-import type { QuizAnswer } from "@/features/quiz/types/submit-quiz";
+import type { QuizAnswer, SubmitQuizResponse } from "@/features/quiz/types/submit-quiz";
 import type { QuizQuestion } from "@/features/quiz/types/quiz-question";
+
 import next from "next/dist/types";
+
+type QuizPlayerProps = {
+  onComplete: (result: SubmitQuizResponse) => void;
+};
 
 /**
  * クイズ進行画面
  *
  * Next.jsのRoute Handlerから10問取得し、
  * 現在の問題だけを1問ずつQuizSectionへ渡す。
+ *
+ * 採点完了後は、結果を親コンポーネントへ返す。
  */
-export function QuizPlayer() {
+export function QuizPlayer({ onComplete }: QuizPlayerProps) {
   // Laravel APIから取得した10問を保持する
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
 
@@ -39,7 +46,7 @@ export function QuizPlayer() {
   // ユーザーの選択した解答をためる
   const [answers, setAnswers] = useState<QuizAnswer[]>([]);
 
-  //
+  // 2重送信防止フラグ
   const [is_submitting, setIsSubmitting] = useState(false);
 
   /**
@@ -107,7 +114,7 @@ export function QuizPlayer() {
       // 10問目を押した瞬間から再クリックを止める
       setIsSubmitting(true);
 
-      
+
       console.log({
         current_index,
         questions_length: questions.length,
@@ -122,6 +129,7 @@ export function QuizPlayer() {
       });
 
       console.log("採点結果:", result);
+      onComplete(result);
 
       return;
     }

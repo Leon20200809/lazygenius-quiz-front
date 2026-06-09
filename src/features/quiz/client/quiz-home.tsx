@@ -2,76 +2,63 @@
 "use client";
 
 import { useState } from "react";
+import { QuizIntroSection } from "@/features/quiz/components/quiz-intro-section";
 import { QuizPlayer } from "@/features/quiz/client/quiz-player";
+import { QuizResultSection } from "@/features/quiz/components/quiz-result-section";
+import type { SubmitQuizResponse } from "@/features/quiz/types/submit-quiz";
 
-type ScreenMode = "intro" | "quiz";
+type ScreenMode = "intro" | "quiz" | "result";
 
 export function QuizHome() {
   const [screen_mode, set_screen_mode] = useState<ScreenMode>("intro");
 
+  // Laravelから返された採点結果を保持する
+  const [quiz_result, setQuizResult] = useState<SubmitQuizResponse | null>(
+    null,
+  );
+
+  /**
+   * クイズを開始する
+   */
   const handleStartQuiz = () => {
     set_screen_mode("quiz");
   };
 
-  const intro_content = (
-    <section className="mx-auto max-w-4xl px-6 py-16">
-      <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-        Laravel API × Next.js Portfolio
-      </p>
+  /**
+   * QuizPlayerから採点結果を受け取り、
+   * リザルト画面へ切り替える
+   */
+  const handleQuizComplete = (result: SubmitQuizResponse) => {
+    setQuizResult(result);
+    set_screen_mode("result");
+  };
 
-      <h1 className="mb-6 text-4xl font-bold tracking-tight text-slate-950">
-        Web開発用語クイズ
-      </h1>
+  /**
+   * 採点結果を破棄してイントロ画面へ戻る
+   */
+  const handleBackToIntro = () => {
+    setQuizResult(null);
+    set_screen_mode("intro");
+  };
 
-      <p className="mb-8 text-lg leading-8 text-slate-700">
-        Web開発で使われる用語を4択形式で確認できる学習用クイズアプリです。
-        Next.jsが画面表示を担当し、Laravel
-        APIが問題取得・選択肢生成・正解判定を担当します。
-      </p>
+  // クイズタイトル画面
+  const intro_content = <QuizIntroSection onStartQuiz={handleStartQuiz} />;
 
-      <div className="mb-8 grid gap-4 md:grid-cols-1">
-        <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="mb-2 text-base font-bold text-slate-950">概要</h2>
-          <p className="text-sm leading-6 text-slate-600">
-            Web開発用語を4択クイズ形式で学べるポートフォリオアプリです。
-          </p>
-        </section>
+  // クイズ問題画面
+  const quiz_content = <QuizPlayer onComplete={handleQuizComplete} />;
 
-        <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="mb-2 text-base font-bold text-slate-950">
-            作った理由
-          </h2>
-          <p className="text-sm leading-6 text-slate-600">
-            実務で使われるフロントエンドとバックエンドを分離した構成を小さく再現し、
-            API通信、DB設計、CSV取り込み、サーバー側判定を経験するために作成しました。
-            開発現場で必要な責務分離とデータ連携の理解を深めることを目的としています。
-          </p>
-        </section>
+  // クイズ採点結果画面
+  const result_content = quiz_result ? (
+    <QuizResultSection result={quiz_result} onBackToIntro={handleBackToIntro} />
+  ) : null;
 
-        <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="mb-2 text-base font-bold text-slate-950">技術設計</h2>
-          <p className="text-sm leading-6 text-slate-600">
-            Laravel / MySQL / Next.js / TypeScript / Tailwind CSS
-            を使用しています。
-          </p>
-        </section>
-      </div>
+  if (screen_mode === "quiz") {
+    return quiz_content;
+  }
 
-      <button
-        type="button"
-        onClick={handleStartQuiz}
-        className="cursor-pointer rounded-full bg-slate-950 px-8 py-3 text-sm font-bold text-white transition-transform hover:scale-105 active:scale-95"
-      >
-        START
-      </button>
+  if (screen_mode === "result") {
+    return result_content;
+  }
 
-      <p className="mt-4 text-sm text-slate-500">
-        STARTを押すとクイズ画面に切り替わります。
-      </p>
-    </section>
-  );
-
-  const quiz_content = <QuizPlayer />;
-
-  return screen_mode === "intro" ? intro_content : quiz_content;
+  return intro_content;
 }
