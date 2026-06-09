@@ -5,8 +5,10 @@ import { useEffect, useState } from "react";
 
 import { fetchStartQuiz } from "@/features/quiz/api/fetch-start-quiz";
 import { QuizSection } from "@/features/quiz/components/quiz-section";
+import { submitQuiz } from "@/features/quiz/api/submit-quiz";
 import type { QuizAnswer } from "@/features/quiz/types/submit-quiz";
 import type { QuizQuestion } from "@/features/quiz/types/quiz-question";
+import next from "next/dist/types";
 
 /**
  * クイズ進行画面
@@ -36,6 +38,9 @@ export function QuizPlayer() {
 
   // ユーザーの選択した解答をためる
   const [answers, setAnswers] = useState<QuizAnswer[]>([]);
+
+  //
+  const [is_submitting, setIsSubmitting] = useState(false);
 
   /**
    * クイズ開始用の10問を取得する
@@ -73,31 +78,55 @@ export function QuizPlayer() {
   }
 
   /**
-   * ユーザーが選んだ回答を保存して、次の問題へ進む
+   * ユーザーが選んだ回答を保存し、
+   * 1〜9問目なら次へ進み、10問目なら一括採点APIへ送信する
    */
-  function handleSelectAnswer(selected_answer: string) {
-    // ユーザーの回答を、現在の問題IDとセットで保存する
-    setAnswers((previous_answers) => {
-      const next_answers = [
-        ...previous_answers,
-        {
-          question_id: current_question.id,
-          selected_answer,
-        },
-      ];
-
-      // 追加後の回答配列を確認する
-      console.table(next_answers);
-
-      return next_answers;
-    });
-
-    // 最後の問題なら、それ以上進ませない
-    if (is_last_question) {
+  async function handleSelectAnswer(selected_answer: string) {
+    // 送信中の再クリックを拒否する
+    if (is_submitting) {
       return;
     }
 
-    // 現在位置を1つ進める
+    // 今までの回答に、今回選んだ回答を追加する
+    const next_answers: QuizAnswer[] = [
+      ...answers,
+      {
+        question_id: current_question.id,
+        selected_answer,
+      },
+    ];
+
+    // 10問目を含んだ最新の回答配列をstateへ保存する
+    setAnswers(next_answers);
+
+    // 追加後の回答配列を確認する
+    console.table(next_answers);
+
+    // 最後の問題なら、10問分を一括採点APIへ送信する
+    if (is_last_question) {
+      // 10問目を押した瞬間から再クリックを止める
+      setIsSubmitting(true);
+
+      
+      console.log({
+        current_index,
+        questions_length: questions.length,
+        is_last_question,
+        answers_length: answers.length,
+        next_answers_length: next_answers.length,
+      });
+
+
+      const result = await submitQuiz({
+        answers: next_answers,
+      });
+
+      console.log("採点結果:", result);
+
+      return;
+    }
+
+    // 1〜9問目なら、次の問題へ進む
     setCurrentIndex((previous_index) => previous_index + 1);
   }
 
